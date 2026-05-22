@@ -347,59 +347,128 @@ function extractId(url){
   m=url.match(/[?&]v=([\w-]{11})/);if(m)return m[1];
   return null;
 }
-let hoverTimer=null;
+
+// Thumbnails: try multiple sources with fallback chain
+function loadThumb(card, id) {
+  const img = new Image();
+  const hq = 'https://img.youtube.com/vi/' + id + '/maxresdefault.jpg';
+  const mq = 'https://img.youtube.com/vi/' + id + '/mqdefault.jpg';
+  const hqProxy = 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
+  const mqProxy = 'https://i.ytimg.com/vi/' + id + '/mqdefault.jpg';
+  const thumb = card.querySelector('.v-thumb');
+
+  function tryLoad(urls, idx) {
+    if (idx >= urls.length) {
+      // All failed — show gold gradient fallback
+      thumb.style.background = 'linear-gradient(135deg, #1a1205, #2a1a08)';
+      return;
+    }
+    const t = new Image();
+    t.onload = () => {
+      // YouTube returns a 120x90 placeholder when thumb doesn't exist — skip it
+      if (t.naturalWidth <= 120) { tryLoad(urls, idx + 1); return; }
+      thumb.style.backgroundImage = 'url(' + JSON.stringify(urls[idx]) + ')';
+      thumb.style.backgroundSize = 'cover';
+      thumb.style.backgroundPosition = 'center';
+    };
+    t.onerror = () => tryLoad(urls, idx + 1);
+    t.src = urls[idx];
+  }
+  tryLoad([hq, mq, hqProxy, mqProxy], 0);
+}
+
+let hoverTimer = null;
+
 function buildCards(){
-  const grid=document.getElementById('videoGrid');
-  grid.innerHTML='';
-  videos.forEach((v,i)=>{
-    const id=extractId(v.url);
-    const thumb=id?'https://img.youtube.com/vi/'+id+'/mqdefault.jpg':'';
-    const previewSrc=id?'https://www.youtube.com/embed/'+id+'?autoplay=1&mute=1&controls=0&loop=1&playlist='+id+'&modestbranding=1&rel=0':'';
-    const card=document.createElement('div');
-    card.className='video-card';
-    card.dataset.cat=v.cat;
-    card.dataset.index=i;
-    card.innerHTML='<div class="v-thumb" style="background-image:url('+JSON.stringify(thumb)+')"></div>'
-      +'<div class="v-iframe-wrap"><iframe src="" data-src="'+previewSrc+'" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>'
-      +'<div class="play-wrap"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>'
-      +'<div class="v-overlay"></div>'
-      +'<div class="v-info"><div class="v-cat">'+v.label+'</div><div class="v-title">'+v.title+'</div></div>'
-      +'<div class="v-hint">click for fullscreen</div>';
-    const iframe=card.querySelector('iframe');
-    card.addEventListener('mouseenter',()=>{hoverTimer=setTimeout(()=>{if(!iframe.src||iframe.src==='about:blank')iframe.src=iframe.dataset.src;},200);});
-    card.addEventListener('mouseleave',()=>{clearTimeout(hoverTimer);iframe.src='';});
-    card.addEventListener('click',()=>openModal(i));
+  const grid = document.getElementById('videoGrid');
+  grid.innerHTML = '';
+  videos.forEach((v, i) => {
+    const id = extractId(v.url);
+    // Use youtube-nocookie.com — works on file:// and avoids most CORS blocks
+    const previewSrc = id
+      ? 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + id + '&modestbranding=1&rel=0&enablejsapi=1'
+      : '';
+
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    card.dataset.cat = v.cat;
+    card.dataset.index = i;
+
+    card.innerHTML =
+      '<div class="v-thumb"></div>'
+      + '<div class="v-iframe-wrap"><iframe src="" data-src="' + previewSrc + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'
+      + '<div class="play-wrap"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>'
+      + '<div class="v-overlay"></div>'
+      + '<div class="v-info"><div class="v-cat">' + v.label + '</div><div class="v-title">' + v.title + '</div></div>'
+      + '<div class="v-hint">click for sound &amp; fullscreen</div>';
+
+    // Load thumbnail with fallback chain
+    if (id) loadThumb(card, id);
+
+    const iframe = card.querySelector('iframe');
+
+    card.addEventListener('mouseenter', () => {
+      hoverTimer = setTimeout(() => {
+        if (!iframe.src || iframe.src === 'about:blank') {
+          iframe.src = iframe.dataset.src;
+        }
+      }, 300);
+    });
+
+    card.addEventListener('mouseleave', () => {
+      clearTimeout(hoverTimer);
+      // Small delay before removing so it doesn't flicker on fast moves
+      setTimeout(() => { iframe.src = ''; }, 100);
+    });
+
+    card.addEventListener('click', () => openModal(i));
     grid.appendChild(card);
   });
 }
+
 function openModal(i){
-  const v=videos[i];const id=extractId(v.url);
-  document.getElementById('modalCat').textContent=v.label;
-  document.getElementById('modalTitle').textContent=v.title;
-  document.getElementById('modalIframe').src=id?'https://www.youtube.com/embed/'+id+'?autoplay=1&rel=0':'';
+  const v = videos[i];
+  const id = extractId(v.url);
+  document.getElementById('modalCat').textContent = v.label;
+  document.getElementById('modalTitle').textContent = v.title;
+  // Full quality with sound and controls
+  document.getElementById('modalIframe').src = id
+    ? 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1'
+    : '';
   document.getElementById('modal').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 }
+
 function closeModal(){
   document.getElementById('modal').classList.remove('open');
-  document.getElementById('modalIframe').src='';
-  document.body.style.overflow='';
+  document.getElementById('modalIframe').src = '';
+  document.body.style.overflow = '';
 }
-document.getElementById('modalClose').addEventListener('click',closeModal);
-document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-document.querySelectorAll('.filter-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    const f=btn.dataset.filter;
-    document.querySelectorAll('.video-card').forEach(card=>{card.classList.toggle('hidden',f!=='all'&&card.dataset.cat!==f);});
+    const f = btn.dataset.filter;
+    document.querySelectorAll('.video-card').forEach(card => {
+      card.classList.toggle('hidden', f !== 'all' && card.dataset.cat !== f);
+    });
   });
 });
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'});});
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth' });
+  });
 });
+
 buildCards();
 </script>
-</body>
-</html>
