@@ -300,6 +300,9 @@ h1{animation:fadeUp 0.8s 0.15s ease both;}
 .build-points li::before{content:'';position:absolute;left:0;top:0.65em;width:6px;height:1px;background:var(--gold);}
 .build-stack{display:flex;flex-wrap:wrap;gap:0.4rem;}
 .build-stack span{font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);border:1px solid var(--border);padding:0.15rem 0.5rem;}
+.build-link{display:inline-flex;align-items:center;gap:0.6rem;align-self:flex-start;margin-top:1.4rem;padding:0.6rem 1.2rem;border:1px solid var(--gold);color:var(--gold);text-decoration:none;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;transition:all 0.3s;}
+.build-link:hover{background:var(--gold);color:var(--dark);}
+.build-note{font-size:0.62rem;color:var(--muted);margin-top:0.5rem;}
 @media (max-width:900px){.build-grid{grid-template-columns:1fr;}.build-section{padding:3.5rem 1.5rem;}}
 </style>
 </head>
@@ -503,6 +506,8 @@ h1{animation:fadeUp 0.8s 0.15s ease both;}
         <li>Password-protected cloud deploy option</li>
       </ul>
       <div class="build-stack"><span>Python</span><span>Flask</span><span>yt-dlp</span><span>Docker</span></div>
+      <a class="build-link" href="https://yt-downloader-7ahc.onrender.com" target="_blank" rel="noopener">Open the app <span>&#8594;</span></a>
+      <p class="build-note">Password-protected &middot; may take a minute to wake up</p>
     </div>
 
     <div class="build-card">
