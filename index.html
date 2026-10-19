@@ -263,7 +263,7 @@ h1{animation:fadeUp 0.8s 0.15s ease both;}
 @media (max-width: 480px) {
   /* Nav — hide some links on very small screens */
   .nav-links{gap:0.8rem;}
-  .nav-links li:nth-child(3){display:none;}
+  .nav-links li:nth-child(3),.nav-links li:nth-child(4){display:none;}
 
   /* Hero */
   .hero{padding:6rem 1.2rem 2.5rem;}
@@ -283,6 +283,24 @@ h1{animation:fadeUp 0.8s 0.15s ease both;}
   /* AI tools: 2 col */
   .ai-tools-grid{grid-template-columns:1fr 1fr;}
 }
+.build-section{padding:5rem 4rem;background:var(--dark2);border-top:1px solid var(--border);}
+.build-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.build-card{background:var(--dark3);border:1px solid var(--border);padding:2rem 1.8rem;position:relative;overflow:hidden;display:flex;flex-direction:column;transition:border-color 0.3s,background 0.3s;}
+.build-card:hover{border-color:var(--gold);background:rgba(201,168,76,0.04);}
+.build-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:0;transition:opacity 0.3s;}
+.build-card:hover::before{opacity:1;}
+.build-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.6rem;}
+.build-icon{width:44px;height:44px;color:var(--gold);}
+.build-icon svg{width:100%;height:100%;}
+.build-num{font-family:'Playfair Display',serif;font-size:2rem;color:rgba(201,168,76,0.25);line-height:1;}
+.build-name{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:400;line-height:1.25;margin-bottom:0.7rem;}
+.build-desc{font-size:0.82rem;color:var(--muted);line-height:1.7;margin-bottom:1.2rem;}
+.build-points{list-style:none;margin-bottom:1.6rem;flex:1;}
+.build-points li{font-size:0.75rem;color:var(--text);line-height:1.6;padding-left:1.1rem;position:relative;margin-bottom:0.45rem;}
+.build-points li::before{content:'';position:absolute;left:0;top:0.65em;width:6px;height:1px;background:var(--gold);}
+.build-stack{display:flex;flex-wrap:wrap;gap:0.4rem;}
+.build-stack span{font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);border:1px solid var(--border);padding:0.15rem 0.5rem;}
+@media (max-width:900px){.build-grid{grid-template-columns:1fr;}.build-section{padding:3.5rem 1.5rem;}}
 </style>
 </head>
 <body>
@@ -291,7 +309,7 @@ h1{animation:fadeUp 0.8s 0.15s ease both;}
   <ul class="nav-links">
     <li><a href="#reel">Reel</a></li>
     <li><a href="#work">Work</a></li>
-    <li><a href="#aitools">AI Tools</a></li><li><a href="#about">About</a></li>
+    <li><a href="#aitools">AI Tools</a></li><li><a href="#builds">Builds</a></li><li><a href="#about">About</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
 </nav>
@@ -465,6 +483,62 @@ h1{animation:fadeUp 0.8s 0.15s ease both;}
 
   </div>
 </section>
+<section class="build-section" id="builds">
+  <div class="section-label">Built with AI</div>
+  <h2>Tools I <em>built</em>, not just used.</h2>
+  <p class="ai-intro">Production has a lot of repetitive grind. So I build my own tools with Claude Code to cut it out &#8212; working software my team and I use every day.</p>
+  <div class="build-grid">
+
+    <div class="build-card">
+      <div class="build-top">
+        <div class="build-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="36" height="26" rx="3"/><path d="M24 15v12M19 22l5 5 5-5"/><path d="M14 40h20"/></svg></div>
+        <div class="build-num">01</div>
+      </div>
+      <div class="build-name">YouTube &amp; Instagram Downloader</div>
+      <p class="build-desc">Paste a link, pick the quality, download. A private web app for pulling reference clips and b-roll without shady ad-filled sites.</p>
+      <ul class="build-points">
+        <li>YouTube, Instagram and Facebook links</li>
+        <li>Choose resolution and format, with live progress</li>
+        <li>Works on laptop or phone over the same Wi-Fi</li>
+        <li>Password-protected cloud deploy option</li>
+      </ul>
+      <div class="build-stack"><span>Python</span><span>Flask</span><span>yt-dlp</span><span>Docker</span></div>
+    </div>
+
+    <div class="build-card">
+      <div class="build-top">
+        <div class="build-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M42 8L6 22l12 4 4 13 7-9 9 7z"/><path d="M18 26l20-14"/></svg></div>
+        <div class="build-num">02</div>
+      </div>
+      <div class="build-name">Telegram AI Content Agent</div>
+      <p class="build-desc">Send a topic or article to a Telegram bot and get back a finished vertical reel &#8212; researched, scripted, voiced and edited automatically.</p>
+      <ul class="build-points">
+        <li>Researches live news and pulls real article photos</li>
+        <li>Writes a 30&#8211;35s script, then storyboards every beat</li>
+        <li>AI voiceover, animated stats and charts, camera motion</li>
+        <li>Renders a 1080&times;1920 reel, mostly on free / local AI</li>
+      </ul>
+      <div class="build-stack"><span>Python</span><span>Gemini</span><span>Ollama</span><span>ElevenLabs</span><span>Remotion</span></div>
+    </div>
+
+    <div class="build-card">
+      <div class="build-top">
+        <div class="build-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="36" height="32" rx="3"/><path d="M6 30h36"/><path d="M11 35h8M22 35h12"/><path d="M24 14l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg></div>
+        <div class="build-num">03</div>
+      </div>
+      <div class="build-name">AI Shorts Editor for Premiere Pro</div>
+      <p class="build-desc">A plugin panel inside Premiere Pro that turns raw talking-head footage into a short-form rough cut with motion graphics &#8212; with me approving every step.</p>
+      <ul class="build-points">
+        <li>Transcribes and analyses the clips in your project</li>
+        <li>AI proposes the cut, then builds it as a new sequence</li>
+        <li>Adds branded motion graphics straight onto the timeline</li>
+        <li>Human approval gates: rough cut &rarr; motion &rarr; final</li>
+      </ul>
+      <div class="build-stack"><span>Adobe UXP</span><span>TypeScript</span><span>Whisper</span><span>Claude</span><span>Remotion</span></div>
+    </div>
+
+  </div>
+</section>
 <section id="about" style="background:var(--dark2);">
   <div class="section-label">About me</div>
   <div class="about-grid">
@@ -528,6 +602,8 @@ h1{animation:fadeUp 0.8s 0.15s ease both;}
 
 <script>
 const videos=[
+  {url:'https://youtu.be/FhMfynKOML8',title:'AI Buildcon \'26 — Launch Promo',cat:'conference',label:'Conference'},
+  {url:'https://youtu.be/7wwseH1efnA',title:'ABD Song — Lyric Music Video',cat:'other',label:'Music Video'},
   {url:'https://youtu.be/CPSZr9AbLSM',title:'AI Buildcon Conference — Full Coverage',cat:'conference',label:'Conference'},
   {url:'https://youtube.com/shorts/0y6rZEMbMKU',title:'AI in Action — Product Demo Reel',cat:'ai',label:'AI Project'},
   {url:'https://youtube.com/shorts/gJBvZeZL7OA',title:'AI Workflow Showcase',cat:'ai',label:'AI Project'},
